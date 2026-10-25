@@ -180,7 +180,6 @@ def main():
     pygame.init()
     snake = Snake()
     apple = Apple()
-    
     apple.randomize_position(snake.positions)
 
     while True:
@@ -199,10 +198,9 @@ def main():
             screen.fill(BOARD_BACKGROUND_COLOR)
             pygame.display.update()
             continue
-        
+
         snake.draw()
         apple.draw()
-        
         pygame.display.update()
 
 
