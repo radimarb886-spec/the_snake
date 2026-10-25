@@ -24,17 +24,17 @@ RIGHT = (1, 0)
 # Цвет фона - черный:
 BOARD_BACKGROUND_COLOR = (0, 0, 0)
 
-# Цвет границы ячейки
-BORDER_COLOR = (0, 0, 0)
+# Цвет границы ячейки:
+BORDER_COLOR = (93, 216, 228)
 
-# Цвет яблока
+# Цвет яблока:
 APPLE_COLOR = (255, 0, 0)
 
-# Цвет змейки
+# Цвет змейки:
 SNAKE_COLOR = (0, 255, 0)
 
 # Скорость движения змейки:
-SPEED = 10
+SPEED = 20
 
 # Настройка игрового окна:
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
@@ -121,24 +121,23 @@ class Snake(GameObject):
             self.next_direction = None
 
     def move(self):
+        """Перемещает змейку на одну ячейку в текущем направлении."""
         head_x, head_y = self.get_head_position()
         dx, dy = self.direction
         new_x = (head_x + dx * GRID_SIZE) % SCREEN_WIDTH
         new_y = (head_y + dy * GRID_SIZE) % SCREEN_HEIGHT
         self.positions.insert(0, (new_x, new_y))
-        
-        # ВОТ ЗДЕСЬ МЫ ЗАПОМИНАЕМ ХВОСТ
+
         if len(self.positions) > self.length:
             self.last = self.positions.pop()
         else:
             self.last = None
 
     def draw(self):
-        # Затираем прошлый хвост черным цветом
+        """Отрисовывает змейку и затирает покинутую ячейку."""
         if self.last:
             self.draw_cell(self.last, BOARD_BACKGROUND_COLOR)
-            
-        # Рисуем тело змейки
+
         for position in self.positions[:-1]:
             self.draw_cell(position, self.body_color)
 
@@ -182,37 +181,30 @@ def main():
     snake = Snake()
     apple = Apple()
     
-    # Если вы передаете позиции змейки в яблоко, чтобы оно не спавнилось на ней:
     apple.randomize_position(snake.positions)
 
     while True:
         clock.tick(SPEED)
 
-        # 1. Обработка нажатий и движения
         handle_keys(snake)
         snake.update_direction()
         snake.move()
 
-        # 2. Проверка, съела ли змейка яблоко
         if snake.get_head_position() == apple.position:
             snake.length += 1
             apple.randomize_position(snake.positions)
 
-        # 3. ВОТ СЮДА ВСТАВЛЯЕМ ПРОВЕРКУ САМОУКУСА
         if snake.get_head_position() in snake.positions[1:]:
             snake.reset()
-            # Очищаем экран от остатков старой змеи:
             screen.fill(BOARD_BACKGROUND_COLOR)
             pygame.display.update()
-            # Пропускаем текущий шаг (отрисовку), чтобы змейка не нарисовалась поверх
             continue
         
-        # 4. Отрисовка (если не было самоукуса)
         snake.draw()
         apple.draw()
         
-        # 5. Обновление экрана
         pygame.display.update()
+
 
 if __name__ == '__main__':
     main()
